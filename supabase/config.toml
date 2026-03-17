@@ -1,0 +1,22 @@
+project_id = "xcfbqenmetcnootkqdew"
+
+[functions.analyze-satellite]
+verify_jwt = false
+
+[functions.process-search]
+verify_jwt = false
+
+[functions.analyze-files]
+verify_jwt = false
+
+[functions.generate-visualization]
+verify_jwt = false
+
+[functions.ai-assistant]
+verify_jwt = false
+
+[functions.ingest-weather]
+verify_jwt = false
+
+[functions.evaluate-hazards]
+verify_jwt = false
