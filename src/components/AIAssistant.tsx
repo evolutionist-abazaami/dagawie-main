@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCircle, X, Send, Loader2, Bot, User, Minimize2, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 type Message = {
   role: "user" | "assistant";
@@ -48,13 +49,15 @@ const AIAssistant = () => {
     let assistantContent = "";
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-assistant`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
             messages: [...messages, userMessage].map((m) => ({
@@ -72,6 +75,10 @@ const AIAssistant = () => {
         }
         if (response.status === 402) {
           toast.error("AI credits exhausted.");
+          return;
+        }
+        if (response.status === 401) {
+          toast.error("Please sign in to use the AI Assistant.");
           return;
         }
         throw new Error("Failed to get response");
